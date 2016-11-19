@@ -1,0 +1,27 @@
+
+@import url("default.css");
+
+table.docutils {
+    border:0 solid #DDCCEE;
+    border-collapse:collapse;
+}
+
+table.docutils td, table.docutils th {
+    background-color:#EEEEFF;
+    border-left:0 none;
+    padding:2px 5px;
+}
+
+th.head {
+    text-align:center;
+}
+
+th {
+    padding-right:5px;
+    text-align:left;
+}
+
+table.docutils th {
+    background-color:#EEDDEE;
+    border-top:1px solid #CCAACC;
+}
