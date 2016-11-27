@@ -5,10 +5,10 @@ arrays of structs, better handling for strings and arrays, struct
 inheritance, and convenient syntax for instantiating and using your 
 custom structs.
 
-protlib requires Python 2.6 or any later version in the 2.x line.
+protlib supports Python 2.6 and 2.7 as well as Python 3.2 and later.
 
 protlib is free for use under the BSD license.  See the LICENSE.txt
 file in this directory for details.
 
 Full documentation for protlib can be found in the docs/ folder
-or online at http://courtwright.org/protlib
+or online at http://pythonhosted.org/protlib/

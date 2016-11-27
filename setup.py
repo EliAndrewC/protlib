@@ -20,8 +20,7 @@ setup(
     author_email = "eli@courtwright.org",
     description = "library for implementing binary network protocols",
     license = "BSD",
-    url = "http://courtwright.org/protlib/",
-    download_url = "http://courtwright.org/protlib/protlib.tar.gz",
+    url = "http://pythonhosted.org/protlib/",
     
     long_description = """
 protlib makes it easy to implement binary network protocols. It uses

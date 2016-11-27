@@ -49,15 +49,13 @@ protlib is free under the BSD license.  It requires Python 2.6 or later and has 
 dependencies.  Because protlib supports Python 3, the code snippets in this
 documentation are copied from a Python 3 interpreter.
 
-You may `click here <http://courtwright.org/protlib/protlib.tar.gz>`_ to download protlib.
-You may also run ``easy_install protlib`` if you have 
-`EasyInstall <http://peak.telecommunity.com/DevCenter/EasyInstall>`_ on your system.  The
-project page for protlib in the Cheese Shop (aka the Python Package Index or PyPI)
-`may be found here <http://pypi.python.org/pypi/protlib/>`_.
+You may `download protlib <https://pypi.python.org/pypi/protlib/>`_ from the Python Package
+Index.  You can also run ``easy_install protlib`` or ``pip install protlib`` if you have one
+of those package managers installed.
 
 You may also check out the development version of protlib with this command:
 
-``svn checkout http://courtwright.org/svn/protlib``
+``git clone https://github.com/EliAndrewC/protlib``
 
 You may download older versions of protlib and view older versions of the protlib documentation
 `here <http://courtwright.org/protlib/old>`_.
@@ -71,7 +69,7 @@ Data Types
     
     This is the root class of all classes representing C data types
     in the protlib library.  It may not be directly instantiated; you
-    must always use one of its subtypes instead.  There are five
+    must always use one of its subtypes instead.  There are six
     optional keyword arguments which you may pass to a CType:
     
     * ``length``: Only valid for the ``CString``, ``CUnicode``, and ``CArray`` data types, for which it is required.  This may be one of three things: an integer which represents the length of the string; the special value ``protlib.AUTOSIZED``, which indicates that the string is null-terminated and can be any size; or a string denoting the field where the actual length value may be found.  For example:
