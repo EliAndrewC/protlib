@@ -19,6 +19,7 @@ from protlib import *
 if sys.version_info[0] == 2:
     from StringIO import StringIO as BytesIO
 else:
+    unicode = str
     from io import BytesIO
 
 warnings.simplefilter("error", CWarning)

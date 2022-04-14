@@ -1,3 +1,7 @@
 *.pyc
 __pycache__
 docs/
+build/
+protlib.egg-info/
+setup.struct_log
+setup.error_log

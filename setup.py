@@ -21,6 +21,7 @@ setup(
     description = "library for implementing binary network protocols",
     license = "BSD",
     url = "http://pythonhosted.org/protlib/",
+    use_2to3=True,
     test_suite="unit_tests",
     long_description = """
 protlib makes it easy to implement binary network protocols. It uses
