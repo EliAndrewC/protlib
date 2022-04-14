@@ -20,10 +20,11 @@ Here's an example of defining, instantiating, writing, and reading a struct usin
 .. code-block:: python
 
     from protlib import *
+
     class Point(CStruct):
         x = CInt()
         y = CInt()
-    
+
     p1 = Point(5, 6)
     p2 = Point(x=5, y=6)
     p3 = Point(y=6, x=5)

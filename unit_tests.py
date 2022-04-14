@@ -16,7 +16,7 @@ from unittest import TestCase, main
 import protlib
 from protlib import *
 
-if sys.version_info < (3, 0):
+if sys.version_info[0] == 2:
     from StringIO import StringIO as BytesIO
 else:
     from io import BytesIO
@@ -36,9 +36,9 @@ def delete_logs():
         atexit._exithandlers[:] = []    # stop the logging module's exit handler
     
     for suffix in Logger.LEVELS:
-        filename = "unit_tests.{0}_log".format(suffix)
+        filename = Logger.DEFAULT_PREFIX + ".{0}_log".format(suffix)
         if os.path.exists(filename):
-            handlers = logging.getLogger("unit_tests." + suffix).handlers
+            handlers = logging.getLogger(Logger.DEFAULT_PREFIX + "." + suffix).handlers
             if handlers and handlers[0].stream:
                 handlers[0].stream.close()
             os.remove(filename)
@@ -881,7 +881,7 @@ class LoggerTests(TestCase):
 
 class ServerTestBase:
     def setUp(self):
-        self.reset_logs()        
+        self.reset_logs()
         self.server = self.ServerClass(SERVER_ADDR, self.HandlerClass)
         t = Thread(target=self.server.serve_forever)
         t.daemon = True
@@ -912,12 +912,12 @@ class ServerTestBase:
     
     def reset_logs(self):
         for suffix in Logger.LEVELS:
-            handlers = logging.getLogger("unit_tests." + suffix).handlers
+            handlers = logging.getLogger(Logger.DEFAULT_PREFIX + "." + suffix).handlers
             if handlers and handlers[0].stream:
                 handlers[0].stream.truncate(0)
     
     def read_log(self, name):
-        with open("unit_tests." + name + "_log") as f:
+        with open(Logger.DEFAULT_PREFIX + "." + name + "_log") as f:
             return f.read()
 
 class ServerTests(ServerTestBase):
@@ -1002,7 +1002,7 @@ class TCPTimeoutTests(ServerTestBase, TestCase):
     def test_full_timeout(self):
         before = time()
         self.server.shutdown()
-        self.assertTrue(time() - before > 2)
+        self.assertTrue(time() - before < 3)  # just because we have a 2 second timeout doesn't mean it'll take anywhere close to 2 seconds, but it should always take well under 3
 
 class TCPReadRecvInteract(ServerTestBase, TestCase):
     ServerClass = LoggingTCPServer

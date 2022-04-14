@@ -25,7 +25,7 @@ from logging import getLogger, Formatter, NOTSET, DEBUG, INFO, WARNING, ERROR, C
 from SocketServer import TCPServer, UDPServer, StreamRequestHandler, DatagramRequestHandler
 
 StringTypes = (type(b""), type(""))
-if sys.version_info < (3, 0):
+if sys.version_info[0] == 2:
     BytesIO = StringIO
     bytes = lambda x: str(bytearray(x))
 else:
@@ -44,7 +44,7 @@ class CError(ValueError):
 class CWarning(UserWarning):
     """the only warning class directly used by protlib (except DeprecationWarning)"""
 
-__version_info__ = (1, 4, 0, "final", 0)
+__version_info__ = (1, 5, 0, "final", 0)
 __version__ = "{0}.{1}.{2}".format(*__version_info__)
 
 BYTE_ORDER = b"!"
@@ -173,7 +173,7 @@ class CType(object):
             elif isinstance(self.length, int) and self.length < 0:
                 raise CError("length integer value must be positive")
         if "full_string" in settings and not isinstance(self, CString):
-            raise warn("full_string parameter has no meaning for {0} objects".format(self.__class__.__name__), CWarning)
+            warn("full_string parameter has no meaning for {0} objects".format(self.__class__.__name__), CWarning)
         
         if isinstance(self, CUnicode):
             self.enc_errors = "strict" if self.enc_errors is None else self.enc_errors
@@ -215,9 +215,7 @@ class CType(object):
             try:
                 return len(self.serialize(field_val, cstruct))
             except:
-                exc_class, exc, tb = sys.exc_info()
-                cerror = CError("{0}.{1} is set to a non-string value: {2!r}".format(cstruct.__class__.__name__, field_name, field_val))
-                raise CError, cerror, tb
+                raise CError("{0}.{1} is set to a non-string value: {2!r}".format(cstruct.__class__.__name__, field_name, field_val))
             return len(serialized)
         else:
             length = getattr(cstruct, self.length, None)
@@ -313,10 +311,8 @@ class CType(object):
             with warnings.catch_warnings():
                 warnings.simplefilter("error", DeprecationWarning)
                 return struct.pack(BYTE_ORDER + self.struct_format(cstruct), val)
-        except:
-            exc_class, exc, tb = sys.exc_info()
-            cerror = CError("{0!r} is not serializable as a {1}: {2}".format(val, self.__class__.__name__, exc))
-            raise CError, cerror, tb
+        except Exception as exc:
+            raise CError("{0!r} is not serializable as a {1}: {2}".format(val, self.__class__.__name__, exc))
 
 class CChar(CType): pass
 class CUChar(CType): pass
@@ -357,18 +353,14 @@ class CUnicode(CType):
             s = _read_until_null(f)
             try:
                 return s.decode(self.encoding, self.enc_errors)
-            except:
-                exc_class, exc, tb = sys.exc_info()
-                cerror = CError("unicode error parsing {0!r}: {1}".format(s, exc))
-                raise CError, cerror, tb
+            except Exception as exc:
+                raise CError("unicode error parsing {0!r}: {1}".format(s, exc))
     
     def serialize(self, val, cstruct=None):
         try:
             encoded = self.convert(val).encode(self.encoding, self.enc_errors)
-        except:
-            exc_class, exc, tb = sys.exc_info()
-            cerror = CError("unicode error serializing {0!r}: {1}".format(val, exc))
-            raise CError, cerror, tb
+        except Exception as exc:
+            raise CError("unicode error serializing {0!r}: {1}".format(val, exc))
         
         if self.length is AUTOSIZED:
             return encoded + b"\0"
@@ -421,10 +413,8 @@ class CArray(CType):
                 try:
                     value = _get_default(value) if param == "default" else value
                     self.serialize( self.convert(value) )
-                except:
-                    exc_class, exc, tb = sys.exc_info()
-                    cerror = CError("{0!r} is not a valid {1} CArray value: {2}".format(value, param, exc))
-                    raise CError, cerror, tb
+                except Exception as exc:
+                    raise CError("{0!r} is not a valid {1} CArray value: {2}".format(value, param, exc))
     
     def struct_format(self, cstruct=None):
         return self.ctype.struct_format() * self.real_length(cstruct)
@@ -719,17 +709,13 @@ class CStruct(CType):
         elif isinstance(field, CType):
             try:
                 value = field.convert(value)
-            except:
-                exc_class, exc, tb = sys.exc_info()
-                cerror = CError("Conversion error: you provided the {0} value {1!r} to the {2} field {3}.{4}: {5}".format(value.__class__.__name__, value, field.__class__.__name__, self.__class__.__name__, name, exc))
-                raise CError, cerror, tb
+            except Exception as exc:
+                raise CError("Conversion error: you provided the {0} value {1!r} to the {2} field {3}.{4}: {5}".format(value.__class__.__name__, value, field.__class__.__name__, self.__class__.__name__, name, exc))
             
             try:
                 field.serialize(value, cstruct=self)
-            except:
-                exc_class, exc, tb = sys.exc_info()
-                cerror = CError("{0!r} is an invalid value for the {1} field {2}.{3}: {4}".format(value, field.__class__.__name__, self.__class__.__name__, name, exc))
-                raise CError, cerror, tb
+            except Exception as exc:
+                raise CError("{0!r} is an invalid value for the {1} field {2}.{3}: {4}".format(value, field.__class__.__name__, self.__class__.__name__, name, exc))
             
             if field.always is not None and value != field.always:
                 warn("{0}.{1} should always be {2!r} but was given a value of {3!r}".format(self.__class__.__name__, name, field.always, value), CWarning)
